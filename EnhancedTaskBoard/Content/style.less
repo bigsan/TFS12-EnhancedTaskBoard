@@ -1,0 +1,100 @@
+﻿.daysAgo {
+    float: left;
+    padding: 0 4px;
+    color: white;
+    background: darkgreen;
+    line-height: 18px;
+
+    &.recent {
+        background: darkred;
+    }
+}
+
+.tbPivotItem {
+    // PBI standard view
+    .daysAgo {
+        margin-right: 4px;
+    }
+
+    .witRemainingWork {
+        float: left;
+        margin-right: 4px;
+    }
+
+    .pivot-state {
+        float: left;
+        line-height: 18px;
+        font-weight: bold;
+        border: dotted 1px gray;
+        background: #ddd;
+        padding: 0 2px;
+    }
+
+    .pivot-assigned-to {
+        display: block;
+        clear: left;
+    }
+}
+
+.taskboard-row-summary .tbPivotItem {
+    // PBI summary view
+    .ellipsis {
+        float: left;
+
+        & ~ .daysAgo {
+            margin: 1px 4px 0 4px;
+        }
+
+        & ~ .pivot-assigned-to {
+            float: left;
+            margin-left: 4px;
+            clear: none;
+        }
+    }
+}
+
+// pivot-state color
+.pivot-state.approved,
+.pivot-state.new {
+    background: red;
+    color: white;
+}
+
+.pivot-state.done {
+    background: darkgreen;
+    color: white;
+}
+
+// work item id
+.wiid {
+    margin-right: 4px;
+    font-size: 80%;
+    text-decoration: underline;
+}
+
+.daysAgo + .witTitle > .wiid {
+    margin-left: 4px;
+}
+
+.tile-dimmed {
+    opacity: 0.2;
+}
+
+.tbTileContent.recent-1day {
+    border-left-color: rgb(160, 215, 149) !important;
+}
+
+#parentPBIHint {
+    position: absolute;
+    width: 126px;
+    background: #eee;
+    padding: 2px 8px;
+    border-radius: 0 5px 5px 0;
+    border: 1px solid brown;
+    border-width: 1px 1px 1px 6px;
+    border-color: black black black brown;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}

@@ -1,0 +1,92 @@
+﻿.daysAgo {
+    float: left;
+    padding: 0 4px;
+    color: white;
+    background: darkgreen;
+    line-height: 18px;
+}
+
+.daysAgo.recent {
+    background: darkred;
+}
+
+.tbPivotItem .daysAgo {
+    margin-right: 4px;
+}
+
+.tbPivotItem .witRemainingWork {
+    float: left;
+    margin-right: 4px;
+}
+
+.tbPivotItem .pivot-state {
+    float: left;
+    line-height: 18px;
+    font-weight: bold;
+    border: dotted 1px gray;
+    background: #ddd;
+    padding: 0 2px;
+}
+
+.tbPivotItem .pivot-assigned-to {
+    display: block;
+    clear: left;
+}
+
+.taskboard-row-summary .tbPivotItem .ellipsis {
+    float: left;
+}
+
+.taskboard-row-summary .tbPivotItem .ellipsis ~ .daysAgo {
+    margin: 1px 4px 0 4px;
+}
+
+.taskboard-row-summary .tbPivotItem .ellipsis ~ .pivot-assigned-to {
+    float: left;
+    margin-left: 4px;
+    clear: none;
+}
+
+.pivot-state.approved,
+.pivot-state.new {
+    background: red;
+    color: white;
+}
+
+.pivot-state.done {
+    background: darkgreen;
+    color: white;
+}
+
+.wiid {
+    margin-right: 4px;
+    font-size: 80%;
+    text-decoration: underline;
+}
+
+.daysAgo + .witTitle > .wiid {
+    margin-left: 4px;
+}
+
+.tile-dimmed {
+    opacity: 0.2;
+}
+
+.tbTileContent.recent-1day {
+    border-left-color: #a0d795 !important;
+}
+
+#parentPBIHint {
+    position: absolute;
+    width: 126px;
+    background: #eee;
+    padding: 2px 8px;
+    border-radius: 0 5px 5px 0;
+    border: 1px solid brown;
+    border-width: 1px 1px 1px 6px;
+    border-color: black black black brown;
+    overflow: hidden;
+    -ms-text-overflow: ellipsis;
+    -o-text-overflow: ellipsis;
+    text-overflow: ellipsis;
+}

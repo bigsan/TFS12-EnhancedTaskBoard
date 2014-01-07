@@ -1,0 +1,8 @@
+<WebAccess version="11.0">
+  <plugin name="Enhanced Task Board 2013" vendor="San Chen" moreinfo="https://github.com/bigsan/TFS12-EnhancedTaskBoard" version="3.0.0" >
+  <modules >
+    <module namespace="TWAExtensions.EnhancedTaskBoard" loadAfter="TFS.Agile.Boards.Controls"/>
+    <module namespace="TWAExtensions.EnhancedTaskBoard" loadAfter="TFS.Agile.TaskBoard"/>
+  </modules>
+  </plugin>
+</WebAccess>
