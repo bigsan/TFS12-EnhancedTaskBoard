@@ -196,8 +196,9 @@ module EnhancedBoardModule {
             if (this.isBacklogItemsView()) {
                 $('.taskboard-parent[id]').each((idx, item: any) => {
                     var id = item.id.match(/\d+$/)[0];
-                    var board = $(".tbPivotItem", item);
-                    addBoardID(board, id);
+                    var board1 = $(".tbPivotItem", item);
+                    var board2 = $(item).closest('.taskboard-row').next().find('.taskboard-parent .tbPivotItem');
+                    addBoardID(board1.add(board2), id);
                 });
             }
         }
@@ -391,8 +392,8 @@ module EnhancedBoardModule {
                     var assignedTo = workItem.getFieldValue("System.AssignedTo");
                     var assignedToElement = $("<span class='pivot-assigned-to'/>").text(assignedTo);
 
-                    pbiCell.find(".daysAgo, .pivot-state").remove();
-                    summaryRow.find(".daysAgo, .pivot-state").remove();
+                    pbiCell.find(".daysAgo, .pivot-state, .pivot-assigned-to").remove();
+                    summaryRow.find(".daysAgo, .pivot-state, .pivot-assigned-to").remove();
 
                     pbiCell.find(".tbPivotItem .witRemainingWork").before(daysAgoElement.clone()).after(stateElement.clone());
                     summaryRow.find(".tbPivotItem").append(daysAgoElement.clone()).append(stateElement.clone());
