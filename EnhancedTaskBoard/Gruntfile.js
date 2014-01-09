@@ -52,6 +52,10 @@ module.exports = function (grunt) {
             ts: {
                 files: ['TWAExtensions.EnhancedTaskBoard.debug.ts'],
                 tasks: ['ts:build']
+            },
+            less: {
+                files: ['Content/style.less'],
+                tasks: ['less:build']
             }
         },
         clean: {
@@ -76,5 +80,5 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-less');
 
     grunt.registerTask('default', ['clean', 'ts', 'less:build']);
-    grunt.registerTask('dist', ['clean', 'ts', 'uglify', 'less', 'compress:build']);
+    grunt.registerTask('dist', ['clean', 'ts', 'uglify', 'less', 'compress']);
 };
