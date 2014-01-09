@@ -36,7 +36,7 @@
     <KeepImportantComments>false</KeepImportantComments>
     <LessCompileOnBuild>false</LessCompileOnBuild>
     <LessCompileToLocation />
-    <LessEnableCompiler>true</LessEnableCompiler>
+    <LessEnableCompiler>false</LessEnableCompiler>
     <LessGenerateCssFile>false</LessGenerateCssFile>
     <LessMinify>false</LessMinify>
     <LessShowPreviewWindow>false</LessShowPreviewWindow>

@@ -377,33 +377,53 @@ module EnhancedBoardModule {
             if (daysAgo < 2) { daysAgoElement.addClass("recent"); }
             if (daysAgo <= 1) { daysAgoElement.addClass("recent-1day"); }
 
-            // task tile
-            var tile = $("#tile-" + id);
-            tile.find(".daysAgo").remove();
-            tile.find(".witExtra").prepend(daysAgoElement.clone());
-            if (daysAgo <= 1) { tile.find(".tbTileContent").addClass("recent recent-1day"); }
+            var tbTile = $("#tile-" + id);
+            if (tbTile.length) {
+                tbTile.find(".daysAgo").remove();
+                tbTile.find(".witExtra").prepend(daysAgoElement.clone());
+                if (daysAgo <= 1) { tbTile.find(".tbTileContent").addClass("recent recent-1day"); }
+            }
 
-            if (this.isBacklogItemsView()) {
-                // pbi tile (fist column of iteration board)
-                var pbiCell = $("#taskboard-table_p" + id);
-                if (pbiCell.length) {
-                    var summaryRow = pbiCell.closest(".taskboard-row").next();
+            var tbPivotItem = $("#taskboard-table_p" + id + " .tbPivotItem");
+            if (tbPivotItem.length) {
+                var summaryPivotItem = tbPivotItem.closest(".taskboard-row").next(".taskboard-row-summary").find('.taskboard-parent .tbPivotItem');
+
+                if (this.isBacklogItemsView()) {
                     var stateElement = $("<span class='pivot-state'>" + state + "</span>").addClass(state.toLowerCase());
                     var assignedTo = workItem.getFieldValue("System.AssignedTo");
                     var assignedToElement = $("<span class='pivot-assigned-to'/>").text(assignedTo);
 
-                    pbiCell.find(".daysAgo, .pivot-state, .pivot-assigned-to").remove();
-                    summaryRow.find(".daysAgo, .pivot-state, .pivot-assigned-to").remove();
+                    tbPivotItem.find(".daysAgo, .pivot-state, .pivot-assigned-to").remove();
+                    summaryPivotItem.find(".daysAgo, .pivot-state, .pivot-assigned-to").remove();
 
-                    pbiCell.find(".tbPivotItem .witRemainingWork").before(daysAgoElement.clone()).after(stateElement.clone());
-                    summaryRow.find(".tbPivotItem").append(daysAgoElement.clone()).append(stateElement.clone());
+                    tbPivotItem.find(".witRemainingWork").before(daysAgoElement.clone()).after(stateElement.clone());
+                    summaryPivotItem.append(daysAgoElement.clone()).append(stateElement.clone());
 
-                    pbiCell.find('.tbPivotItem').append(assignedToElement.clone());
-                    summaryRow.find('.tbPivotItem').append(assignedToElement.clone());
+                    tbPivotItem.append(assignedToElement.clone());
+                    summaryPivotItem.append(assignedToElement.clone());
+                }
+                else if (this.isPeopleView()) {
+                    summaryPivotItem.closest('.taskboard-parent').addClass('people-view');
+
+                    summaryPivotItem.find('.witRemainingWork, .todo, .progress, .done').remove();
+
+                    summaryPivotItem.append(tbPivotItem.find('.witRemainingWork').clone());
+
+                    var todoTiles = tbPivotItem.closest('.taskboard-parent').siblings('.taskboard-cell[axis=taskboard-table_s0]').find('.tbTile');
+                    var progTiles = tbPivotItem.closest('.taskboard-parent').siblings('.taskboard-cell[axis=taskboard-table_s1]').find('.tbTile');
+                    var doneTiles = tbPivotItem.closest('.taskboard-parent').siblings('.taskboard-cell[axis=taskboard-table_s2]').find('.tbTile');
+                    var todoHour = todoTiles.find('.witRemainingWork').get().reduce((prev, curr, idx, arr) => prev + parseFloat($(curr).text()), 0) || 0;
+                    var progHour = progTiles.find('.witRemainingWork').get().reduce((prev, curr, idx, arr) => prev + parseFloat($(curr).text()), 0) || 0;
+
+                    var witDetail = $('<div />').addClass('witRemainingWorkDeail')
+                        .append($('<div class="todo" />').html(Util.format('<div>{1} h</div><div>({0} tasks)</div>', todoTiles.length, todoHour)))
+                        .append($('<div class="progress" />').html(Util.format('<div>{1} h</div><div>({0} tasks)</div>', progTiles.length, progHour)))
+                        .append($('<div class="done" />').html(Util.format('<div>({0} tasks)</div>', doneTiles.length)))
+
+                    summaryPivotItem.append(witDetail);
                 }
             }
         }
-
     }
 
     class Bundle {
@@ -456,6 +476,10 @@ module EnhancedBoardModule {
                 }
             })();
             return dfd.promise();
+        }
+
+        static format(pattern: string, ...args: any[]) {
+            return ''.replace.call(pattern, /\{(\d+)\}/g, (m, num) => args[num]);
         }
     }
 }
