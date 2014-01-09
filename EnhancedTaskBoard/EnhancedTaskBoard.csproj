@@ -17,12 +17,6 @@
     <IISExpressUseClassicPipelineMode />
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="Content\style.css">
-      <DependentUpon>style.less</DependentUpon>
-    </Content>
-    <Content Include="Content\style.min.css">
-      <DependentUpon>style.less</DependentUpon>
-    </Content>
     <Content Include="package.json" />
     <Content Include="Gruntfile.js" />
     <Content Include="manifest.xml">
