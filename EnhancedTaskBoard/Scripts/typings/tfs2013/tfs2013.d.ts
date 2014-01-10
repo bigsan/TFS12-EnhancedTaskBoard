@@ -226,7 +226,7 @@ declare module "Presentation/Scripts/TFS/TFS.Host" {
         getPublicActionUrl(action, controller, routeData);
         getActionUrl(action, controller, routeData);
         getPermalinkUrl(action, controller, routeData);
-        getIdentityImageUrl(identityId, urlParams);
+        getIdentityImageUrl(identityId: string, urlParams?: any);
         isEmbedded();
         getClientHost();
         contextData: any; /* null */
@@ -238,6 +238,9 @@ declare module "Presentation/Scripts/TFS/TFS.Host" {
         currentUser: any; /* null */
         currentIdentity: any; /* null */
         currentTeam: {
+            identity: {
+                id: string;
+            };
             name: string;
         }; /* null */
         currentUserHasTeamPermission: boolean;
@@ -298,7 +301,7 @@ declare module "Presentation/Scripts/TFS/TFS.OM" {
     }
     class TfsTeamProjectCollection {
         static getConnection(tfsContext);
-        static getDefaultConnection();
+        static getDefaultConnection(): TfsConnection;
         constructor(tfsContext);
     }
     class TfsService {
@@ -405,7 +408,7 @@ declare module "Presentation/Scripts/TFS/TFS.OM" {
     }
     class TeamService {
         constructor();
-        beginGetTeamMembers(teamIdentity, includeGroups, maxResults, callback, errorCallback);
+        beginGetTeamMembers(teamIdentity: string, includeGroups: boolean, maxResults: number, callback: Function, errorCallback?: Function);
     }
     class LinkingUtilities {
         static VSTFS: string;

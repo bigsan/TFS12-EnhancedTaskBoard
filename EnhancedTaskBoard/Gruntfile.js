@@ -22,6 +22,15 @@ module.exports = function (grunt) {
                 ]
             }
         },
+        concat: {
+            options: {
+                separator: ';'
+            },
+            build: {
+                src: ['Scripts/amplify.min.js'],
+                dest: 'Scripts/bundle.js'
+            }
+        },
         less: {
             build: {
                 files: [
@@ -44,7 +53,7 @@ module.exports = function (grunt) {
                 },
                 files: [
                     { src: ['TWAExtensions.EnhancedTaskBoard.*.js', 'manifest.xml'] },
-                    { expand: true, flatten: true, src: ['Scripts/amplify.min.js', 'Content/style.min.css'] }
+                    { expand: true, flatten: true, src: ['Scripts/bundle.js', 'Content/style.min.css'] }
                 ]
             }
         },
@@ -64,6 +73,7 @@ module.exports = function (grunt) {
                     'TWAExtensions.EnhancedTaskBoard.debug.js',
                     'TWAExtensions.EnhancedTaskBoard.min.js',
                     'tscommand.tmp.txt',
+                    'Scripts/bundle.js',
                     'Content/style.css',
                     'Content/style.min.css',
                     'output/*'
@@ -78,7 +88,8 @@ module.exports = function (grunt) {
     grunt.loadNpmTasks('grunt-contrib-compress');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-less');
+    grunt.loadNpmTasks('grunt-contrib-concat');
 
     grunt.registerTask('default', ['clean', 'ts', 'less:build']);
-    grunt.registerTask('dist', ['clean', 'ts', 'uglify', 'less', 'compress']);
+    grunt.registerTask('dist', ['clean', 'ts', 'uglify', 'concat', 'less', 'compress']);
 };

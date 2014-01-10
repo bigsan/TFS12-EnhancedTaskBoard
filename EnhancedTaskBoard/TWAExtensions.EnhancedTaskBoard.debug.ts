@@ -45,7 +45,7 @@ module EnhancedBoardModule {
 
             var bundle = new Bundle(this.getModuleBase());
             bundle.injectCss();
-            bundle.injectAmplifyJS();
+            bundle.injectBundleJS();
 
             this.initWorkItemManagerEvents();
 
@@ -388,9 +388,9 @@ module EnhancedBoardModule {
             if (tbPivotItem.length) {
                 var summaryPivotItem = tbPivotItem.closest(".taskboard-row").next(".taskboard-row-summary").find('.taskboard-parent .tbPivotItem');
 
+                var assignedTo = workItem.getFieldValue("System.AssignedTo");
                 if (this.isBacklogItemsView()) {
                     var stateElement = $("<span class='pivot-state'>" + state + "</span>").addClass(state.toLowerCase());
-                    var assignedTo = workItem.getFieldValue("System.AssignedTo");
                     var assignedToElement = $("<span class='pivot-assigned-to'/>").text(assignedTo);
 
                     tbPivotItem.find(".daysAgo, .pivot-state, .pivot-assigned-to").remove();
@@ -405,7 +405,7 @@ module EnhancedBoardModule {
                 else if (this.isPeopleView()) {
                     summaryPivotItem.closest('.taskboard-parent').addClass('people-view');
 
-                    summaryPivotItem.find('.witRemainingWork, .todo, .progress, .done').remove();
+                    summaryPivotItem.find('.witRemainingWork, .witRemainingWorkDetail').remove();
 
                     summaryPivotItem.append(tbPivotItem.find('.witRemainingWork').clone());
 
@@ -415,14 +415,68 @@ module EnhancedBoardModule {
                     var todoHour = todoTiles.find('.witRemainingWork').get().reduce((prev, curr, idx, arr) => prev + parseFloat($(curr).text()), 0) || 0;
                     var progHour = progTiles.find('.witRemainingWork').get().reduce((prev, curr, idx, arr) => prev + parseFloat($(curr).text()), 0) || 0;
 
-                    var witDetail = $('<div />').addClass('witRemainingWorkDeail')
+                    var witDetail = $('<div />').addClass('witRemainingWorkDetail')
                         .append($('<div class="todo" />').html(Util.format('<div>{1} h</div><div>({0} tasks)</div>', todoTiles.length, todoHour)))
                         .append($('<div class="progress" />').html(Util.format('<div>{1} h</div><div>({0} tasks)</div>', progTiles.length, progHour)))
                         .append($('<div class="done" />').html(Util.format('<div>({0} tasks)</div>', doneTiles.length)))
 
                     summaryPivotItem.append(witDetail);
                 }
+                this.addMemberImage(tbPivotItem.add(summaryPivotItem), assignedTo);
             }
+        }
+
+        private beginGetIdentityId(displayName: string, callback: Function) {
+            var MEMBER_DATA_KEY = "__MEMBER_DATA__";
+
+            function findId(name: string) {
+                var memberData: any[] = JSON.parse(amplify.store.sessionStorage(MEMBER_DATA_KEY));
+                for (var i = 0, count = memberData.length; i < count; i++) {
+                    var m = memberData[i];
+                    if (m.displayName == name) { return m.id; };
+                }
+                return "";
+            }
+
+            var promise = $.Deferred(dfd => {
+                var memberData = amplify.store.sessionStorage(MEMBER_DATA_KEY);
+                if (!memberData) {
+                    var teamService: TFS_OM.TeamService = this.TFS_OM.TfsTeamProjectCollection.getDefaultConnection().getService(this.TFS_OM.TeamService);
+                    var tfsContext = this.Host.TfsContext.getDefault();
+                    teamService.beginGetTeamMembers(tfsContext.currentTeam.identity.id, false, 100, (members: any[]) => {
+                        amplify.store.sessionStorage(MEMBER_DATA_KEY, JSON.stringify(members));
+                        dfd.resolve();
+                    });
+                }
+                else {
+                    dfd.resolve();
+                }
+                return dfd.promise();
+            })
+
+            promise.done(() => {
+                var id = findId(displayName);
+                callback(id);
+            });
+        }
+
+        private addMemberImage(tiles: JQuery, displayName: string) {
+            if (!displayName) return;
+            this.beginGetIdentityId(displayName, (identityId) => {
+                if (identityId == "") { return; }
+
+                var tfsContext = this.Host.TfsContext.getDefault();
+                var imageUrl = tfsContext.getIdentityImageUrl(identityId);
+
+                var ruleSelector = '.etb.identity-' + identityId;
+                if (!tiles.find(ruleSelector).length) {
+                    var avatar = $('<div/>')
+                        .addClass('etb identity-picture small')
+                        .addClass('identity-' + identityId)
+                        .css('background-image', 'url(' + imageUrl + ')');
+                    tiles.append(avatar);
+                }
+            });
         }
     }
 
@@ -435,9 +489,9 @@ module EnhancedBoardModule {
             $("head").append($("<link>").attr({ "rel": "stylesheet", "type": "text/css", "href": css }));
         }
 
-        injectAmplifyJS() {
-            Logger.log("injectAmplifyJS");
-            var src = this.baseUrl + "amplify.min.js";
+        injectBundleJS() {
+            Logger.log("injectBundleJS");
+            var src = this.baseUrl + "bundle.js";
             $("head").append($("<script>").attr({ "type": "text/javascript", "src": src }));
         }
     }
