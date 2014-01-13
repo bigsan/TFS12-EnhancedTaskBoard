@@ -50,7 +50,7 @@ module EnhancedBoardModule {
             this.initWorkItemManagerEvents();
 
             this.addMaximizeWorkspaceToggleFilter();
-            this.setupPopoverOfParentPBI();
+            this.setupPopoverOfParentItem();
 
             if (this.isTaskBoard()) {
                 this.addToolbarButtonsToTaskBoard();
@@ -264,15 +264,15 @@ module EnhancedBoardModule {
         /****************************************************************/
 
 
-        private beginGetParentPBI(id, callback) {
-            Logger.log("beginGetParentPBI");
+        private beginGetParentItem(id, callback) {
+            Logger.log("beginGetParentItem");
             var that = this;
             that.WorkItemManager.beginGetWorkItem(id, function (workItem) {
                 var links = workItem.getLinks();
                 var parentLink = $.grep<any>(links, function (e, i) { return e.baseLinkType == "WorkItemLink" && e.getLinkTypeEnd().name == "Parent"; })[0];
 
                 if (!parentLink) {
-                    Logger.log("no parent PBI for #" + id);
+                    Logger.log("no parent item for #" + id);
                     callback(null);
                 }
                 else {
@@ -283,22 +283,40 @@ module EnhancedBoardModule {
             });
         }
 
-        private setupPopoverOfParentPBI() {
-            Logger.log("setupPopoverOfParentPBI");
-
-            function showParentPBI(tileOffset, parentPBI) {
-                var title = parentPBI.id + ": " + parentPBI.getTitle();
-
-                var hint = $("#parentPBIHint");
-                hint = hint.length ? hint : $("<div id='parentPBIHint'/>").appendTo("body");
-                hint.text(title).attr("title", title);
-
-                tileOffset.left += 6;
-                tileOffset.top -= (hint.height() - 1);
-                hint.offset(tileOffset).show();
-            }
+        private setupPopoverOfParentItem() {
+            Logger.log("setupPopoverOfParentItem");
 
             var that = this;
+            function showParentItem(tile: JQuery, id: string) {
+                var dfd = $.Deferred();
+
+                if (!tile.data('parentItemTitle')) {
+                    that.beginGetParentItem(id, function (parentItem) {
+                        if (parentItem == null) dfd.reject();
+
+                        var title = parentItem.id + ": " + parentItem.getTitle();
+                        tile.data('parentItemTitle', title);
+                        dfd.resolve();
+                    });
+                }
+                else {
+                    dfd.resolve();
+                }
+
+                dfd.done(function () {
+                    var hint = $("#parentItemHint").hide();
+                    hint = hint.length ? hint : $("<div id='parentItemHint'/>").appendTo("body").hide();
+
+                    var title = tile.data('parentItemTitle');
+                    var tileOffset = tile.offset();
+                    hint.text(title).attr("title", title);
+
+                    tileOffset.left += 6;
+                    tileOffset.top -= (hint.height() - 1);
+                    hint.css({ left: tileOffset.left, top: tileOffset.top }).show();
+                });
+            }
+
             if (this.isAgileBoard()) {
                 /*
                 div.hub-pivot-content
@@ -310,19 +328,9 @@ module EnhancedBoardModule {
                 */
                 $(".hub-pivot-content")
                     .on("mousemove", ".board-tile", function (e) {
-                        e.stopPropagation();
-
                         var tile = $(this);
                         var id = tile.data("item-id");
-
-                        that.beginGetParentPBI(id, function (parentPBI) {
-                            if (parentPBI == null) return;
-
-                            showParentPBI(tile.offset(), parentPBI);
-                        });
-                    })
-                    .on("mousemove scroll", function () {
-                        $("#parentPBIHint").hide();
+                        showParentItem(tile, id);
                     });
             }
             else if (this.isTaskBoard()) {
@@ -347,19 +355,18 @@ module EnhancedBoardModule {
                 */
                 $("#taskboard")
                     .on("mousemove", ".tbTile", function (e) {
-                        e.stopPropagation();
+                        if (!that.isPeopleView()) { return false; }
 
                         var tile = $(this);
                         var id = tile.attr("id").match(/tile-(\d+)/)[1];
-
-                        that.beginGetParentPBI(id, function (parentPBI) {
-                            showParentPBI(tile.offset(), parentPBI);
-                        });
-                    })
-                    .on("mousemove scroll", function () {
-                        $("#parentPBIHint").hide();
+                        showParentItem(tile, id);
+                        return false;
                     });
             }
+
+            $('.hub-pivot-content, #taskboard').on("mousemove scroll", function () {
+                $("#parentItemHint").hide();
+            });
         }
 
         private addExtraInfoToTaskboardWorkItem(workItem: TFS_WorkItemTracking.WorkItem) {
@@ -469,13 +476,12 @@ module EnhancedBoardModule {
                 var imageUrl = tfsContext.getIdentityImageUrl(identityId);
 
                 var ruleSelector = '.etb.identity-' + identityId;
-                if (!tiles.find(ruleSelector).length) {
-                    var avatar = $('<div/>')
-                        .addClass('etb identity-picture small')
-                        .addClass('identity-' + identityId)
-                        .css('background-image', 'url(' + imageUrl + ')');
-                    tiles.append(avatar);
-                }
+                tiles.find(ruleSelector).remove();
+                var avatar = $('<div/>')
+                    .addClass('etb identity-picture')
+                    .addClass('identity-' + identityId)
+                    .css('background-image', 'url(' + imageUrl + ')');
+                tiles.append(avatar);
             });
         }
     }
