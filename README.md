@@ -9,19 +9,30 @@ Features
 -----------------
 * Add work item id to task boards.
 * Add state to backlog items with different background color.
-	* Done: <span style='background:darkgreen;color:white'>Done</span>
-	* Commited: <span style='background:#ddd'>Commited</span>
-	* Approved: <span style='background:red;color:white'>Approved</span>
-	* New: <span style='background:red;color:white'>New</span>
+	* Done: dark green
+	* Commited: light gray
+	* Approved: red
+	* New: red
 * Add days-ago of work items since last modified with different background color.
-	* more then 2 days: <span style='background:darkgreen;color:white'>3.5d</span>
-	* less then 2 days: <span style='background:darkred;color:white'>1.8d</span>
-	* less then 1 day: besides of rules above, the left border color of the task board will become <span style="background:rgb(160, 215, 149)">&nbsp;&nbsp;</span>.
+	* more then 2 days: dark green
+	* less then 2 days: dark red
+	* less then 1 day: dark red with light green left border.
 * Add assigned-to name and image of backlog items.
 * Add user image, remaining work and task count of each state when in summray people-view (row collapsed).
 * Show parent backlog summary of current task on mouse over.
 * Collapse/expand all backlog items.
 * Maximize workspace.
+
+Screen Shots
+-----------------
+
+***Backlog View***
+
+![Backlog View](https://raw.github.com/bigsan/TFS12-EnhancedTaskBoard/master/ScreenShots/BacklogView.png)
+
+***People View***
+
+![People View](https://raw.github.com/bigsan/TFS12-EnhancedTaskBoard/master/ScreenShots/PeopleView.png)
 
 Installation
 -----------------
