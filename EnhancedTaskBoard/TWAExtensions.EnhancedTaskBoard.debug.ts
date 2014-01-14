@@ -160,8 +160,8 @@ module EnhancedBoardModule {
             var service = this.TFS_OM.TfsTeamProjectCollection.getDefaultConnection().getService(this.TFS_WorkItemTracking.WorkItemStore);
             this.WorkItemManager = service.workItemManager;
             this.WorkItemManager.attachWorkItemChanged((sender, args) => {
-                if (args.change == "reset" || args.change == "save-complete") {
-                    Logger.log('*** WorkItemChanged ***');
+                if (args.change === this.TFS_WorkItemTracking.WorkItemChangeType.Reset || args.change === this.TFS_WorkItemTracking.WorkItemChangeType.SaveCompleted) {
+                    Logger.log('*** WorkItemChanged', args.change);
                     window.setTimeout(() => {
                         if (this.isTaskBoard()) {
                             this.addTaskboardIDs();
@@ -419,8 +419,9 @@ module EnhancedBoardModule {
                     var todoTiles = tbPivotItem.closest('.taskboard-parent').siblings('.taskboard-cell[axis=taskboard-table_s0]').find('.tbTile');
                     var progTiles = tbPivotItem.closest('.taskboard-parent').siblings('.taskboard-cell[axis=taskboard-table_s1]').find('.tbTile');
                     var doneTiles = tbPivotItem.closest('.taskboard-parent').siblings('.taskboard-cell[axis=taskboard-table_s2]').find('.tbTile');
-                    var todoHour = todoTiles.find('.witRemainingWork').get().reduce((prev, curr, idx, arr) => prev + parseFloat($(curr).text()), 0) || 0;
-                    var progHour = progTiles.find('.witRemainingWork').get().reduce((prev, curr, idx, arr) => prev + parseFloat($(curr).text()), 0) || 0;
+                    var sum = (prev, curr, idx, arr) => prev + (parseFloat($(curr).text()) || 0);
+                    var todoHour = todoTiles.find('.witRemainingWork').get().reduce(sum, 0) || 0;
+                    var progHour = progTiles.find('.witRemainingWork').get().reduce(sum, 0) || 0;
 
                     var witDetail = $('<div />').addClass('witRemainingWorkDetail')
                         .append($('<div class="todo" />').html(Util.format('<div>{1} h</div><div>({0} tasks)</div>', todoTiles.length, todoHour)))
